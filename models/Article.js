@@ -21,7 +21,8 @@ const ArticleSchema = new Schema({
   },
   belongs_to: {
     type: String,
-    required: true
+    required: true,
+    
   },
   created_by: {
     type: mongoose.Schema.Types.ObjectId,

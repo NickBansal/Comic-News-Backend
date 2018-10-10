@@ -14,15 +14,28 @@ const seedDB = (topicsData, usersData, articlesData, commentsData) => {
     .then(([ topicDocs, userDocs ]) => {
         const newArticle = formatArticle(articlesData, topicDocs, userDocs)
         const articelRaw = Article.insertMany(newArticle);
-        return Promise.all([articelRaw, userDocs])
+        return Promise.all([articelRaw, userDocs, topicDocs])
     })
-    .then(([articlesDocs, userReDocs ]) => {
-        const newComment = formatArticle(commentsData, articlesDocs, userReDocs)
-        return Comment.insertMany(newComment)
+    .then(([articlesDocs, userDocs, topicDocs ]) => {
+        const newComment = formatArticle(commentsData, articlesDocs, userDocs)
+        return Promise.all([articlesDocs, userDocs, topicDocs, Comment.insertMany(newComment)])
     })
-    .then(console.log)
+    .then(([articlesDocs, userDocs, topicDocs, commentsDocs]) => {
+        return [articlesDocs[0], userDocs[0], topicDocs[0], commentsDocs[0]] 
+    })
     .catch(console.log);
 }
+
+// .then(([actorsDocs, companiesDocs]) => {
+//     const actorObj = changeId(actors, actorsDocs)
+//     const companyObj = changeId(company, companiesDocs)
+//     const formattedMovies = formatMovies(movie, actorObj, companyObj)
+//     return Promise.all([actorsDocs, companiesDocs, Movies.insertMany(formattedMovies)])
+// })
+// .then(([actorDocs, companyDocs, movieDocs]) => {
+//     return [actorDocs[0], companyDocs[0], movieDocs[0]]
+// })
+
 
 
 module.exports = seedDB;

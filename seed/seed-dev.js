@@ -6,4 +6,7 @@ const { articles, comments, topics, users } = require('./testData');
 
 mongoose.connect(DB_URL, {useNewUrlParser: true})
     .then(() => seedDB(topics, users, articles, comments))
-    .then(() => mongoose.disconnect())
+    .then(({ articlesDocs, commentsDocs, topicsDocs, usersDocs }) => {
+        mongoose.disconnect()
+    })
+    .then(console.log('Finished'))

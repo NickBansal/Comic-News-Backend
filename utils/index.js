@@ -1,16 +1,17 @@
-exports.formatArticle = (data, docsOne, docsTwo) => {
-    let belongs_to;
-    return data.map(article => {
-        
-        const newBelongs = docsOne.find(topic => topic.slug === article.topic).slug
-        if (newBelongs === undefined) {
-            belongs_to = docsTwo.find(topic => topic.username === article.created_by)._id
-        } else {
-            belongs_to = newBelongs
-        }
-
-        const created_by = docsTwo.find(user => user.username === article.created_by)._id
+exports.formatArticle = (articlesData, topicDocs, userDocs) => {
+    return articlesData.map(article => {
+        const created_by = userDocs.find(user => user.username === article.created_by)._id
+        const belongs_to = topicDocs.find(topic => topic.slug === article.topic).slug
         return {...article, belongs_to, created_by}
     })
 }
+
+exports.formatComment = (commentsData, articleDocs, userDocs) => {
+    return commentsData.map(comment => {
+        const created_by = userDocs.find(user => user.username === comment.created_by)._id
+        const belongs_to = articleDocs.find(article => article.created_by === created_by)._id
+        return {...comment, created_by, belongs_to}
+    })
+}
+
 

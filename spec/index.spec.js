@@ -1,23 +1,32 @@
 process.env.NODE_ENV = 'test';
 const app = require('../app');
 const request = require('supertest')(app);
+const mongoose = require('mongoose');
 const { expect } = require('chai');
-const seedDB = require('../seeds/seed');
-const data  = require('../seeds/testdata')
+const seedDB = require('../seed/seed');
+const { topics, users, articles, comments } = require('../seed/testData')
 
 
-describe('/api', () => {
+describe('/api', function()  {
     let articlesDocs, commentsDocs, topicsDocs, usersDocs;
+  
     beforeEach(() => {
-        return seedDB(data)
+        return seedDB( topics, users, articles, comments )
         .then(docs => {
-            [articlesDocs, commentsDocs, topicsDocs, usersDocs] = docs;
+            [topics, users, articles, comments] = docs;
+        })
+        .catch(err => {
+            console.log('.....', err);
         })
     })
-    describe('/articles', () => {
-        it('', () => {
-            expect(usersDocs.name).to.equal('jonny')
-        })
+    after(() => {
+        return mongoose.disconnect();
+    })
+    describe('/topics', () => {
+        it('returns 200 for any method on non-existant url', () => {
+            return request.get('/api/topics')
+            .expect(200)
+            .then()
+        })  
     })
 })
-

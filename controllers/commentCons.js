@@ -8,7 +8,7 @@ exports.sendAllComments = (req, res) => {
     })
     .populate({
         path: 'belongs_to', 
-        select: 'name -_id'
+        select: 'title -_id'
     })
     .then(comments => res.send(comments))
     .catch(console.log)

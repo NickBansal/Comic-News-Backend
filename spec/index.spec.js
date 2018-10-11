@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const { expect } = require('chai');
 const seedDB = require('../seed/seed');
 const { topics, users, articles, comments } = require('../seed/testData');
-const { Article } = require('../models')
 
 
 describe('/api', function()  {
@@ -64,16 +63,29 @@ describe('/api', function()  {
                 })
             })
         })
-        describe.only('/topics/mitch/articles', () => {
+        describe.only('/mitch/articles', () => {
             it('POST returns a new object and 200 status', () => {
                 return request.post('/api/topics/mitch/articles')
                 .send({
                     title: "new article", 
                     body: "This is my new article content",
-                    belongs_to: "mitch",
-                    created_by: "This has a mongo_id"
                 })
                 .expect(200)
+                .then(res => {
+                    expect(res.body).to.have.property('belongs_to')
+                    expect(res.body).to.be.an('object')
+                    expect(res.body.title).to.equal('new article')
+                })
+            })
+            it.only('POST returns an error when post fields are missing', () => {
+                return request.post('/api/topics/mitch/articles')
+                .send({
+                    title: "new article" 
+                })
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Bad request')
+                })
             })
         })
     })

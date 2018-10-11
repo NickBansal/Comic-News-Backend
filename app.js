@@ -17,7 +17,4 @@ app.use(handle404)
 app.use(handle400) // Bad request
 app.use(handle500)
 
-// if no data is found return Promise.reject({ status: 404, msg: 'Actor not found' })
-
-
 module.exports = app; 

@@ -72,6 +72,8 @@ POST /api/topics/:topic_slug/articles
 # e.g: `{ "title": "new article", "body": "This is my new article content", "created_by": "user_id goes here"}`
 ```
 
+
+
 ```http
 GET /api/articles
 # Returns all the articles

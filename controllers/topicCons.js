@@ -16,13 +16,15 @@ exports.sendTopicArticles = (req, res, next) => {
     .catch(console.log)
 }
 
-exports.postTopicArticle = (req, res) => {
+exports.postTopicArticle = (req, res, next) => {
     const { belongs_to } = req.params; 
     const { title, body } = req.body;
     const created_by = '5bbf0d9de3d615050c48b3cd'
     Article.create({ ...req.body, belongs_to, created_by })
-    .then(articles => res.send(articles))
-    .catch(console.log)
+    .then(articles => {
+        res.send(articles)
+    })
+    .catch(next)
 }
 
 

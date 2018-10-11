@@ -5,11 +5,12 @@ const mongoose = require('mongoose');
 const { expect } = require('chai');
 const seedDB = require('../seed/seed');
 const { topics, users, articles, comments } = require('../seed/testData');
+const { Article } = require('../models')
 
 
 describe('/api', function()  {
     let articlesDocs, commentsDocs, topicsDocs, usersDocs;
-    this.timeout(8000)
+    this.timeout(10000)
     beforeEach(() => {
         return seedDB( topics, users, articles, comments )
         .then(docs => {
@@ -63,7 +64,7 @@ describe('/api', function()  {
                 })
             })
         })
-        describe.only('/mitch/articles', () => {
+        describe('/mitch/articles', () => {
             it('POST returns a new object and 200 status', () => {
                 return request.post('/api/topics/mitch/articles')
                 .send({
@@ -77,7 +78,7 @@ describe('/api', function()  {
                     expect(res.body.title).to.equal('new article')
                 })
             })
-            it.only('POST returns an error when post fields are missing', () => {
+            it('POST returns an error when post fields are missing', () => {
                 return request.post('/api/topics/mitch/articles')
                 .send({
                     title: "new article" 
@@ -106,6 +107,16 @@ describe('/api', function()  {
             .then(() => {
                 expect(articlesDocs.title).to.equal('Living in the shadow of a great man')
                 expect(articlesDocs).to.be.a('object')
+            })
+        })
+        describe.only('/:article_id', () => {
+            it('GET returns 200 and a specific article', () => {
+                return request.get('/api/articles/5bbfadb8a72fdf04f7b0a27c')
+                .send('5bbfadb8a72fdf04f7b0a27c')
+                .expect(200)
+                .then(res => {
+                    console.log(res.body)
+                })
             })
         })
     })

@@ -101,6 +101,8 @@ PATCH /api/articles/:article_id
 # e.g: `/api/articles/:article_id?vote=up`
 ```
 
+
+
 ```http
 PATCH /api/comments/:comment_id
 # Increment or Decrement the votes of a comment by one. This route requires a vote query of 'up' or 'down'

@@ -1,15 +1,18 @@
 const { Topic, Article, User } = require('../models')
 
-exports.sendAllTopics = (req, res) => {
+exports.sendAllTopics = (req, res, next) => {
     Topic.find()
     .then(topics => res.send(topics))
-    .catch(console.log)
+    .catch(err => console.log(err))
 }
 
-exports.sendTopicArticles = (req, res) => {
+exports.sendTopicArticles = (req, res, next) => {
     const { belongs_to } = req.params;
     Article.find({ belongs_to })
-    .then(articles => res.send(articles))
+    .then(articles => { 
+        if (articles.length === 0) next({ status: 400, msg: `${belongs_to} does not have any articles available` })
+        else res.send(articles)
+    })
     .catch(console.log)
 }
 

@@ -19,3 +19,13 @@ exports.updateVoteCountForComment = (req, res, next) => {
     })
     .catch(next)
 }
+
+exports.deleteCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    Comment.findByIdAndRemove(comment_id)
+    .then(deleted => {
+        if (!deleted) return Promise.reject({ status: 400, msg: `${comment_id} has no associated comments` })
+        res.status(204).send([])
+    })
+    .catch(next)
+}

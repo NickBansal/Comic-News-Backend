@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const { expect } = require('chai');
 const seedDB = require('../seed/seed');
 const { topics, users, articles, comments } = require('../seed/testData');
-const { Article } = require('../models')
 
 
 describe('/api', function()  {
@@ -51,7 +50,7 @@ describe('/api', function()  {
             })
         })
         describe('/:topic_slug/articles', () => {
-            it('returns a 400 for a request with no articles', () => {
+            it('GET returns a 400 for a request with no articles', () => {
                 return request.get('/api/topics/nick/articles')
                 .expect(400)
                 .then(res => {
@@ -157,7 +156,7 @@ describe('/api', function()  {
                     expect(res.body).to.be.an('object')
                 })
             })
-            it.only('GET returns 400 when given a wrong but valid article_id', () => {
+            it('GET returns 400 when given a wrong but valid id', () => {
                 return request.get(`/api/articles/${usersDocs._id}`)
                 .expect(400)
                 .then(res => {
@@ -183,7 +182,7 @@ describe('/api', function()  {
                         expect(res.body[1]).to.have.property('body', 'This morning, I showered for nine minutes.')
                     })
                 })
-                it('POST returns 200 and a new comment body', () => {
+                it('POST returns 200 and creats a new comment', () => {
                     return request.post(`/api/articles/${articlesDocs._id}/comments`)
                     .send({
                         body: "A new Comment"
@@ -248,6 +247,17 @@ describe('/api', function()  {
                 .expect(400)
                 .then(res => {
                     expect(res.body.msg).to.equal('Bad request')
+                })
+            })
+            it('DELETE returns 200 and deletes the specific comment', () => {
+                return request.delete(`/api/comments/${commentsDocs._id}`)
+                .expect(204)
+            })
+            it('DELETE returns 400 if given a wrong but valid mongo Id', () => {
+                return request.delete(`/api/comments/${usersDocs._id}`)
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal(`${usersDocs._id} has no associated comments`)
                 })
             })
         })

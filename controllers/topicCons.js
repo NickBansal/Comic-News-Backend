@@ -13,7 +13,7 @@ exports.sendTopicArticles = (req, res, next) => {
         if (articles.length === 0) return Promise.reject({ status: 400, msg: `${belongs_to} does not have any articles available` })
         res.send(articles)
     })
-    .catch(console.log)
+    .catch(next)
 }
 
 exports.postTopicArticle = (req, res, next) => {

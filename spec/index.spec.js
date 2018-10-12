@@ -10,14 +10,15 @@ const { Article } = require('../models')
 
 describe('/api', function()  {
     let articlesDocs, commentsDocs, topicsDocs, usersDocs;
-    this.timeout(10000)
+    this.timeout(20000)
     beforeEach(() => {
         return seedDB( topics, users, articles, comments )
         .then(docs => {
             [topicsDocs, usersDocs, articlesDocs, commentsDocs] = docs;
         })
         .catch(err => {
-            console.log('.....', err);
+            console.log(err)
+            next(err)
         })
     })
     after(() => {
@@ -27,6 +28,7 @@ describe('/api', function()  {
         return request.get('/api')
         .expect(200)
     })
+
     describe('/api/wrongurl', () => {
         it('return 404 error when passed a wrong url', () => {
             return request.get('/api/wrongurl')
@@ -36,6 +38,9 @@ describe('/api', function()  {
             })
         })
     })
+
+    // TOPICS TESTING!!!
+
     describe('/topics', () => {
         it('returns 200 and a topic object', () => {
             return request.get('/api/topics')
@@ -45,7 +50,7 @@ describe('/api', function()  {
                 expect(topicsDocs.slug).to.equal('mitch')
             })
         })
-        describe('/topics/nick/articles', () => {
+        describe('/:topic_slug/articles', () => {
             it('returns a 400 for a request with no articles', () => {
                 return request.get('/api/topics/nick/articles')
                 .expect(400)
@@ -53,23 +58,20 @@ describe('/api', function()  {
                     expect(res.body.msg).to.equal(`nick does not have any articles available`)
                 })
             })
-        })
-        describe('/topics/mitch/articles', () => {
             it('returns a 200 when passed a user with articles available', () => {
-                return request.get('/api/topics/mitch/articles')
+                return request.get(`/api/topics/${topicsDocs.slug}/articles`)
                 .expect(200)
                 .then(res => {
                     expect(res.body).to.have.lengthOf(2)
                     expect(res.body[0].belongs_to).to.equal('mitch')
                 })
             })
-        })
-        describe('/mitch/articles', () => {
             it('POST returns a new object and 200 status', () => {
-                return request.post('/api/topics/mitch/articles')
+                return request.post(`/api/topics/${topicsDocs.slug}/articles`)
                 .send({
                     title: "new article", 
                     body: "This is my new article content",
+                    created_by: `${usersDocs._id}`
                 })
                 .expect(200)
                 .then(res => {
@@ -79,7 +81,7 @@ describe('/api', function()  {
                 })
             })
             it('POST returns an error when post fields are missing', () => {
-                return request.post('/api/topics/mitch/articles')
+                return request.post(`/api/topics/${topicsDocs.slug}/articles`)
                 .send({
                     title: "new article" 
                 })
@@ -88,8 +90,18 @@ describe('/api', function()  {
                     expect(res.body.msg).to.equal('Bad request')
                 })
             })
+            it('GET returns a 404 error when passed a wrong url', () => {
+                return request.get(`/api/topics/${topicsDocs.slug}/wrongurl`)
+                .expect(404)
+                .then(res => {
+                    expect(res.body.msg).to.equal(`/api/topics/${topicsDocs.slug}/wrongurl does not exist`)
+                })
+            })
         })
     })
+
+    // USERS TESTING!!
+
     describe('/users', () => {
         it('returns 200 and an users object', () => {
             return request.get('/api/users')
@@ -99,7 +111,27 @@ describe('/api', function()  {
                 expect(usersDocs).to.have.property('username')
             })
         })
+        describe('/:username', () => {
+            it('GET returns 200 and the users profile', () => {
+                return request.get(`/api/users/${usersDocs.username}`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.username).to.equal(`${usersDocs.username}`)
+                    expect(res.body).to.be.an('object')
+                })
+            })
+            it('GET returns 400 with an unknown username', () => {
+                return request.get('/api/users/nick')
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal('nick is not a valid profile')
+                })
+            })
+        })
     })
+
+    // ARTICLES TESTING!!!
+
     describe('/articles', () => {
         it('returns 200 and an articles object', () => {
             return request.get('/api/articles')
@@ -109,17 +141,83 @@ describe('/api', function()  {
                 expect(articlesDocs).to.be.a('object')
             })
         })
-        describe.only('/:article_id', () => {
+        describe('/:article_id', () => {
+            it('GET returns 400 and a error message when given a wrong article ID', () => {
+                return request.get(`/api/articles/wrongarticleId`)
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Bad request')
+                })
+            })
             it('GET returns 200 and a specific article', () => {
-                return request.get('/api/articles/5bbfadb8a72fdf04f7b0a27c')
-                .send('5bbfadb8a72fdf04f7b0a27c')
+                return request.get(`/api/articles/${articlesDocs._id}`)
                 .expect(200)
                 .then(res => {
-                    console.log(res.body)
+                    expect(res.body).to.have.property('body')
+                    expect(res.body).to.be.an('object')
+                })
+            })
+            it.only('GET returns 400 when given a wrong but valid article_id', () => {
+                return request.get(`/api/articles/${usersDocs._id}`)
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal(`${usersDocs._id} is not a valid article Id`)
+                })
+            })
+            it('PATCH returns 200 and an updated vote_count', () => {
+                return request.patch(`/api/articles/${articlesDocs._id}?vote=up`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body).to.be.an('object')
+                    expect(res.body).to.have.property('votes')
+                    expect(res.body.votes).to.equal(1)
+                })
+            })
+            describe('/comments', () => {
+                it('GET returns 200 and all comments for a specific article', () => {
+                    return request.get(`/api/articles/${articlesDocs._id}/comments`)
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body).to.have.lengthOf(4)
+                        expect(res.body[0]).to.have.property('belongs_to')
+                        expect(res.body[1]).to.have.property('body', 'This morning, I showered for nine minutes.')
+                    })
+                })
+                it('POST returns 200 and a new comment body', () => {
+                    return request.post(`/api/articles/${articlesDocs._id}/comments`)
+                    .send({
+                        body: "A new Comment"
+                    })
+                    .expect(200)
+                    .then(res => {
+                        expect(res.body.body).to.equal("A new Comment")
+                        expect(res.body).to.have.property('created_by')
+                        expect(res.body.belongs_to).to.equal(`${articlesDocs._id}`)
+                    })
+                })
+                it('POST returns 400 if fields are missing from the post', () => {
+                    return request.post(`/api/articles/${articlesDocs._id}/comments`)
+                    .send({
+                        title: "Wrong field"
+                    })
+                    .expect(400)
+                    .then(res => {
+                        expect(res.body.msg).to.equal('Bad request')
+                    })
+                })
+                it('GET returns a 404 - invalid address', () => {
+                    return request.get(`/api/articles/${articlesDocs._id}/wrongurl`)
+                    .expect(404)
+                    .then(res => {
+                        expect(res.body.msg).to.equal(`/api/articles/${articlesDocs._id}/wrongurl does not exist`)
+                    })
                 })
             })
         })
     })
+
+    // COMMENTS TESTING!!
+
     describe('/comments', () => {
         it('returns 200 and an comments object', () => {
             return request.get('/api/comments')
@@ -127,6 +225,30 @@ describe('/api', function()  {
             .then(() => {
                 expect(commentsDocs).to.have.property('body')
                 expect(commentsDocs.votes).to.equal(7)
+            })
+        })
+        describe('/:comment_id', () => {
+            it('PATCH returns 200 and an updated votecount for a comment', () => {
+                return request.patch(`/api/comments/${commentsDocs._id}?vote=down`)
+                .expect(200)
+                .then(res => {
+                    expect(res.body.votes).to.equal(6)
+                    expect(res.body).to.have.keys('body', 'votes', 'created_at', 'belongs_to', 'created_by', '__v', '_id' )
+                })
+            })
+            it('PATCH returns 400 if a wrong but valid mongo_id', () => {
+                return request.patch(`/api/comments/${usersDocs._id}?vote=down`)
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal(`${usersDocs._id} is not a correct comment_id`)
+                })
+            })
+            it('PATCH return 400 if an invalid comment_id', () => {
+                return request.patch(`/api/comments/nick`)
+                .expect(400)
+                .then(res => {
+                    expect(res.body.msg).to.equal('Bad request')
+                })
             })
         })
     })

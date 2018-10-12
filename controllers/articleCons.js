@@ -11,7 +11,10 @@ exports.sendArticleById = (req, res, next) => {
     const { article_id } = req.params
     Article.findById(article_id)
     .populate('created_by')
-    .then(article => res.send(article))
+    .then(article => {
+        if(!article) return Promise.reject({ status: 400, msg: `${article_id} is not a valid article Id` })
+        res.send(article)
+    })
     .catch(next)
 }
 
@@ -19,14 +22,24 @@ exports.sendCommentsByArticles = (req, res, next) => {
     const { article_id } = req.params
     Comment.find({ belongs_to: article_id })
     .then(comments => res.send(comments))
-    .catch(console.log)
+    .catch(next)
 }
 
 exports.postCommentByArticle = (req, res, next) => {
-    res.send('POST COMMENT')
+    const { article_id } = req.params
+    const { body } = req.body
+    Comment.create({ body, created_by: article_id, belongs_to: article_id })
+    .then(comment => res.send(comment))
+    .catch(next)
 }
 
 exports.voteArticleUpOrDown = (req, res, next) => {
-    res.send('PATCH ARTICLE')
+    const { article_id } = req.params
+    const { vote } = req.query
+    let value = (vote === 'up') ? 1 : -1
+    Article.findOneAndUpdate({_id: article_id }, { $inc: { votes: value }}, {new: true})
+    .then(article => {
+        res.send(article)
+    })
 }
 

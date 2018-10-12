@@ -1,15 +1,21 @@
 const { Comment } = require('../models')
 
-exports.sendAllComments = (req, res) => {
+exports.sendAllComments = (req, res, next) => {
     Comment.find()
-    .populate({ 
-        path: 'created_by'
-        // select: 'name -_id' 
-    })
-    .populate({
-        path: 'belongs_to'
-        // select: 'title -_id'
-    })
+    .populate('created_by')
+    .populate('belongs_to')
     .then(comments => res.send(comments))
-    .catch(console.log)
+    .catch(next)
+}
+
+exports.updateVoteCountForComment = (req, res, next) => {
+    const { comment_id } = req.params
+    const { vote } = req.query
+    let value = (vote === 'up') ? 1 : -1
+    Comment.findByIdAndUpdate(comment_id, { $inc: { votes: value }}, { new: true })
+    .then(comment => {
+        if (!comment) return Promise.reject({ status: 400, msg: `${comment_id} is not a correct comment_id` })
+        res.send(comment)
+    })
+    .catch(next)
 }

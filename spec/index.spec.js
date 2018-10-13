@@ -15,21 +15,19 @@ describe('/api', function()  {
         .then(docs => {
             [topicsDocs, usersDocs, articlesDocs, commentsDocs] = docs;
         })
-        .catch(err => {
-            console.log(err)
-            next(err)
-        })
+        .catch(console.log)
     })
     after(() => {
         return mongoose.disconnect();
     })
+
     it('returns a 200 on the API route page', () => {
         return request.get('/api')
         .expect(200)
     })
 
     describe('/api/wrongurl', () => {
-        it('return 404 error when passed a wrong url', () => {
+        it('GET returns 404 error when passed a wrong url', () => {
             return request.get('/api/wrongurl')
             .expect(404)
             .then(res => {
@@ -41,12 +39,13 @@ describe('/api', function()  {
     // TOPICS TESTING!!!
 
     describe('/topics', () => {
-        it('returns 200 and a topic object', () => {
+        it('GET returns 200 and a topic object', () => {
             return request.get('/api/topics')
             .expect(200)
-            .then(() => {
-                expect(topicsDocs.title).to.equal('Mitch')
-                expect(topicsDocs.slug).to.equal('mitch')
+            .then(res => {
+                expect(res.body).to.have.lengthOf(2)
+                expect(res.body[0].title).to.equal('Mitch')
+                expect(res.body[0].slug).to.equal('mitch')
             })
         })
         describe('/:topic_slug/articles', () => {
@@ -57,12 +56,13 @@ describe('/api', function()  {
                     expect(res.body.msg).to.equal(`nick does not have any articles available`)
                 })
             })
-            it('returns a 200 when passed a user with articles available', () => {
+            it('GET returns a 200 when passed a user with articles available', () => {
                 return request.get(`/api/topics/${topicsDocs.slug}/articles`)
                 .expect(200)
                 .then(res => {
                     expect(res.body).to.have.lengthOf(2)
                     expect(res.body[0].belongs_to).to.equal('mitch')
+                    expect(res.body[0]).to.have.property('comment_count')
                 })
             })
             it('POST returns a new object and 200 status', () => {
@@ -102,12 +102,13 @@ describe('/api', function()  {
     // USERS TESTING!!
 
     describe('/users', () => {
-        it('returns 200 and an users object', () => {
+        it('GET returns 200 and an users object', () => {
             return request.get('/api/users')
             .expect(200)
-            .then(() => {
-                expect(usersDocs.name).to.equal('jonny')
-                expect(usersDocs).to.have.property('username')
+            .then(res => {
+                expect(res.body).to.have.length(2)
+                expect(res.body[0].name).to.equal('jonny')
+                expect(res.body[0]).to.have.property('username')
             })
         })
         describe('/:username', () => {
@@ -132,12 +133,14 @@ describe('/api', function()  {
     // ARTICLES TESTING!!!
 
     describe('/articles', () => {
-        it('returns 200 and an articles object', () => {
+        it('GET returns 200 and an article object', () => {
             return request.get('/api/articles')
             .expect(200)
-            .then(() => {
-                expect(articlesDocs.title).to.equal('Living in the shadow of a great man')
-                expect(articlesDocs).to.be.a('object')
+            .then(res => {
+                expect(res.body).to.have.lengthOf(4)
+                expect(res.body[0]).to.have.property('comment_count')
+                expect(res.body[0].title).to.equal('Living in the shadow of a great man')
+                expect(res.body[3].body).to.equal('Bastet walks amongst us, and the cats are taking arms!')
             })
         })
         describe('/:article_id', () => {
@@ -154,6 +157,8 @@ describe('/api', function()  {
                 .then(res => {
                     expect(res.body).to.have.property('body')
                     expect(res.body).to.be.an('object')
+                    expect(res.body).to.have.property('comment_count')
+                    expect(res.body.comment_count).to.equal(4)
                 })
             })
             it('GET returns 400 when given a wrong but valid id', () => {
@@ -218,12 +223,13 @@ describe('/api', function()  {
     // COMMENTS TESTING!!
 
     describe('/comments', () => {
-        it('returns 200 and an comments object', () => {
+        it.only('GET returns 200 and an comments object', () => {
             return request.get('/api/comments')
             .expect(200)
-            .then(() => {
-                expect(commentsDocs).to.have.property('body')
-                expect(commentsDocs.votes).to.equal(7)
+            .then(res => {
+                expect(res.body).to.have.lengthOf(8)
+                expect(res.body[0]).to.have.property('body')
+                expect(res.body[0].votes).to.equal(7)
             })
         })
         describe('/:comment_id', () => {

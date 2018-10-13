@@ -1,17 +1,21 @@
-const { Topic, Article, User } = require('../models')
+const { Topic, Article, Comment } = require('../models')
 
 exports.sendAllTopics = (req, res, next) => {
     Topic.find()
     .then(topics => res.send(topics))
-    .catch(err => console.log(err))
+    .catch(next)
 }
 
 exports.sendTopicArticles = (req, res, next) => {
     const { belongs_to } = req.params;
-    Article.find({ belongs_to })
-    .then(articles => { 
+    return Promise.all([Article.find({ belongs_to }).lean(), Comment.find().lean()])
+    .then(([articles, comments]) => {
         if (articles.length === 0) return Promise.reject({ status: 400, msg: `${belongs_to} does not have any articles available` })
-        res.send(articles)
+        const articlesComments = articles.map(article => {
+            const comment_count = comments.filter(comment => comment.belongs_to.toString() === article._id.toString()).length
+            return { ...article, comment_count }
+        })
+        res.send(articlesComments)
     })
     .catch(next)
 }

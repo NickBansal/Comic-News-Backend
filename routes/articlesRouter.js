@@ -7,7 +7,9 @@ const {
     postCommentByArticle 
 } = require('../controllers/articleCons')
 
-articlesRouter.get('/', sendAllArticles)
+articlesRouter
+.route('/')
+.get(sendAllArticles)
 
 articlesRouter
 .route('/:article_id')

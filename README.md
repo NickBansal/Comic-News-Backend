@@ -93,7 +93,7 @@ In order to transfer our database to the site you need to use a local database. 
 * https://mlab.com/
 
 A link to my heroku site can be found here:
-*  https://agile-bastion-11504.herokuapp.com/
+*  https://agile-bastion-11504.herokuapp.com/api
 
 ## Built With
 * NodeJS

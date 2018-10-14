@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
+process.env.NODE_ENV = 'production';
 const mongoose = require('mongoose');
-const DB_URL = 'mongodb://Bansal321:75J0tryG!@ds131753.mlab.com:31753/ncnews'
+const { DB_URL } = require('./config')
 const APIrouter = require('./routes/APIrouter');
 const bodyParser = require('body-parser');
 const { handle404, handle400, handle500 } = require('./error-handlers')

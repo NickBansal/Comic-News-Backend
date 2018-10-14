@@ -6,7 +6,7 @@ const APIrouter = require('./routes/APIrouter');
 const bodyParser = require('body-parser');
 const { handle404, handle400, handle500 } = require('./error-handlers')
 
-mongoose.connect(DB_URL, { useNewUrlParser: true })
+mongoose.connect('mongodb://Bansal321:75J0tryG!@ds131753.mlab.com:31753/ncnews', { useNewUrlParser: true })
   .then(console.log(`Database is running on ${DB_URL}`))
 
 app.use(bodyParser.json())

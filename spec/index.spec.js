@@ -17,9 +17,7 @@ describe('/api', function()  {
         })
         .catch(console.log)
     })
-    after(() => {
-        return mongoose.disconnect();
-    })
+    after(() => mongoose.disconnect())
 
     it('returns a 200 on the API route page', () => {
         return request.get('/api')

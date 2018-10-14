@@ -6,7 +6,7 @@ const config = {
     },
     test: {
         DB_URL: 'mongodb://localhost:27017/nc_news_test'
-    }
+    },
 }
 
 module.exports = config[env];

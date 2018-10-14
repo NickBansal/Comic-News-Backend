@@ -221,7 +221,7 @@ describe('/api', function()  {
     // COMMENTS TESTING!!
 
     describe('/comments', () => {
-        it.only('GET returns 200 and an comments object', () => {
+        it('GET returns 200 and an comments object', () => {
             return request.get('/api/comments')
             .expect(200)
             .then(res => {
@@ -253,9 +253,12 @@ describe('/api', function()  {
                     expect(res.body.msg).to.equal('Bad request')
                 })
             })
-            it('DELETE returns 200 and deletes the specific comment', () => {
+            it.only('DELETE returns 200 and deletes the specific comment', () => {
                 return request.delete(`/api/comments/${commentsDocs._id}`)
                 .expect(204)
+                .then(res => {
+                    expect(res.body).to.be.an('object').that.is.empty
+                })
             })
             it('DELETE returns 400 if given a wrong but valid mongo Id', () => {
                 return request.delete(`/api/comments/${usersDocs._id}`)

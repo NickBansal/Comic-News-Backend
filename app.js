@@ -9,7 +9,9 @@ const { handle404, handle400, handle500 } = require('./error-handlers')
 mongoose.connect(DB_URL, { useNewUrlParser: true })
   .then(console.log(`Database is running on ${DB_URL}`))
 
-app.use(bodyParser.json())
+app.set('view engine', 'ejs')
+
+app.use(express.static('public'), bodyParser.json())
 app.use('/api', APIrouter)
 app.use('/*', (req, res, next) => next({ status: 404, msg: `${req.originalUrl} does not exist` }))
 app.use(handle404)

@@ -2,7 +2,7 @@ const APIrouter = require('express').Router();
 const { articlesRouter, commentsRouter, topicRouter, userRouter } = require('./')
 
 APIrouter.get('/', (req, res) => {
-    res.send("API PAYGE")
+    res.render('homepage')
 })
 
 APIrouter

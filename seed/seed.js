@@ -23,7 +23,7 @@ const seedDB = (topicsData, usersData, articlesData, commentsData) => {
     .then(([topicDocs, userDocs, articlesDocs, commentsDocs]) => {
         return [topicDocs[0], userDocs[0], articlesDocs[0], commentsDocs[0]] 
     })
-    .catch();
+    .catch(console.log);
 }
 
 

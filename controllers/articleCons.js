@@ -33,6 +33,7 @@ exports.sendCommentsByArticles = (req, res, next) => {
     const { article_id } = req.params
     Comment.find({ belongs_to: article_id })
     .populate('created_by')
+    .populate('belongs_to')
     .then(comments => res.send(comments))
     .catch(next)
 }

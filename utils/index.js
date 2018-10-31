@@ -9,7 +9,7 @@ exports.formatArticle = (articlesData, topicDocs, userDocs) => {
 exports.formatComment = (commentsData, articleDocs, userDocs) => {
     return commentsData.map(comment => {
         const created_by = userDocs.find(user => user.username === comment.created_by)._id
-        const belongs_to = articleDocs.find(article => article.created_by === created_by)._id
+        const belongs_to = articleDocs.find(article => article.title === comment.belongs_to)._id
         return {...comment, created_by, belongs_to}
     })
 }

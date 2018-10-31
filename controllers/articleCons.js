@@ -2,6 +2,7 @@ const { Article, Comment } = require('../models')
 
 exports.sendAllArticles = (req, res, next) => {
     return Promise.all([Article.find().lean(), Comment.find().lean()])
+    .populate('created_by')
     .then(([articles, comments]) => {
         const articlesComment = articles.map(article => {
             const comment_count = comments.filter(comment => comment.belongs_to.toString() === article._id.toString()).length
@@ -31,6 +32,8 @@ exports.sendArticleById = (req, res, next) => {
 exports.sendCommentsByArticles = (req, res, next) => {
     const { article_id } = req.params
     Comment.find({ belongs_to: article_id })
+    .populate('created_by')
+    .populate('belongs_to')
     .then(comments => res.send(comments))
     .catch(next)
 }

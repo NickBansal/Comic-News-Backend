@@ -9,7 +9,7 @@ const { handle404, handle400, handle500 } = require('./error-handlers')
 const cors = require('cors')
 
 mongoose.connect(DB_URL, { useNewUrlParser: true })
-  .then(console.log(`Database is running on ${DB_URL}`))
+   .then(console.log(`Database is running on ${DB_URL}`))
 
 app.set('view engine', 'ejs')
 app.use(cors())

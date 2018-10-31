@@ -21,7 +21,7 @@ const seedDB = (topicsData, usersData, articlesData, commentsData) => {
         return Promise.all([topicDocs, userDocs, articlesDocs, Comment.insertMany(newComment)])
     })
     .then(([topicDocs, userDocs, articlesDocs, commentsDocs]) => {
-        console.log(commentsDocs[32], userDocs)
+        // console.log(commentsDocs[32], userDocs)
         return [topicDocs, userDocs, articlesDocs, commentsDocs] 
     })
     .catch(console.log);

@@ -46,11 +46,8 @@ exports.sendCommentsByArticles = (req, res, next) => {
 };
 
 exports.postCommentByArticle = (req, res, next) => {
-    console.log('posting a comment....')
     const { article_id } = req.params
     const { body, created_by } = req.body
-    console.log(req.body)
-    console.log(body, created_by, article_id)
     Comment.create({ body, created_by, belongs_to: article_id })
     .then(comment => res.send(comment))
     .catch(next)

@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 const { Article, Comment, User } = require('../models')
-=======
-const { Article, Comment } = require("../models");
->>>>>>> 53ad863bd339a93dc352632b8120996fddac01f1
+
 
 exports.sendAllArticles = (req, res, next) => {
   return Promise.all([Article.find().lean(), Comment.find().lean()])

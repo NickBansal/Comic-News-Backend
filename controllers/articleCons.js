@@ -1,4 +1,4 @@
-const { Article, Comment } = require('../models')
+const { Article, Comment, User } = require('../models')
 
 exports.sendAllArticles = (req, res, next) => {
     return Promise.all([Article.find().lean(), Comment.find().lean()])
@@ -42,9 +42,11 @@ exports.postCommentByArticle = (req, res, next) => {
     const { article_id } = req.params
     const { body, created_by } = req.body
     Comment.create({ ...req.body, belongs_to: article_id })
-    .populate('created_by')
-    .populate('belongs_to')
-    .then(comment => res.send(comment))
+    .then(comment => {
+        const belongs_to = Artice.findById(article_id)
+        const created_by = User.findById(created_by)
+        res.send({ ...comment, created_by, belongs_to })
+    })
     .catch(next)
 }
 

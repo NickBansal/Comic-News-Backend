@@ -52,11 +52,9 @@ exports.postCommentByArticle = (req, res, next) => {
     .then(comment => {
         const user = User.findById(created_by)
         const article = Article.findById(article_id)
-        return Promise.All([comment, user, article])
+        return {...comment, user, article}
     })
-    .then((comment, user, article) => {
-        res.send({ comment, user, article })
-    })
+    .then(comment => res.send(comment))
     .catch(next)
 }
 

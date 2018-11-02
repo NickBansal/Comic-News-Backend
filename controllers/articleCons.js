@@ -51,8 +51,11 @@ exports.postCommentByArticle = (req, res, next) => {
     Comment.create({ ...req.body, belongs_to: article_id })
     .then(comment => {
         const user = User.findById(created_by)
-        const newComment = { ...comment, user}
-        res.send(newComment)
+        const article = Article.findById(article_id)
+        return Promise.All([comment, user, article])
+    })
+    .then((comment, user, article) => {
+        res.send({ comment, user, article })
     })
     .catch(next)
 }

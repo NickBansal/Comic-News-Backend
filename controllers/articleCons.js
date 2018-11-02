@@ -36,12 +36,14 @@ exports.sendCommentsByArticles = (req, res, next) => {
     .populate('belongs_to')
     .then(comments => res.send(comments))
     .catch(next)
-}
+} 
 
 exports.postCommentByArticle = (req, res, next) => {
     const { article_id } = req.params
-    const { body } = req.body
-    Comment.create({ body, created_by: article_id, belongs_to: article_id })
+    const { body, created_by } = req.body
+    Comment.create({ body, created_by, belongs_to: article_id })
+    .populate('created_by')
+    .populate('belongs_to')
     .then(comment => res.send(comment))
     .catch(next)
 }

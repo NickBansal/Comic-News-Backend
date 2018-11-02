@@ -2,16 +2,25 @@ const { Article, Comment, User } = require('../models')
 
 
 exports.sendAllArticles = (req, res, next) => {
-  return Promise.all([Article.find().lean(), Comment.find().lean()])
-    .populate("created_by")
-    .then(([articles, comments]) => {
-      const articlesComment = articles.map(article => {
-        const comment_count = comments.filter(
-          comment => comment.belongs_to.toString() === article._id.toString()
-        ).length;
-        return { ...article, comment_count };
+  return Promise.all(
+    [
+      Article.find()
+        .populate('created_by')
+        .lean()
+        .exec(),
+      Comment.find()
+        .lean()
+    ]
+  )
+    .then(([articleDocs, commentDocs]) => {
+      articles = articleDocs.map(article => {
+        const comments = commentDocs.filter(comment => comment.belongs_to.toString() === article._id.toString()).length;
+        return {
+          ...article,
+          comments
+        };
       });
-      res.send(articlesComment);
+      res.status(200).send({ articles });
     })
     .catch(next);
 };

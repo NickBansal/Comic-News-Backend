@@ -41,7 +41,7 @@ exports.sendCommentsByArticles = (req, res, next) => {
 exports.postCommentByArticle = (req, res, next) => {
     const { article_id } = req.params
     const { body, created_by } = req.body
-    Comment.create({ body, created_by, belongs_to: article_id })
+    Comment.create({ ...req.body, belongs_to: article_id })
     .populate('created_by')
     .populate('belongs_to')
     .then(comment => res.send(comment))

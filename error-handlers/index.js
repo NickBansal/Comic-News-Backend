@@ -1,4 +1,5 @@
 exports.handle404 = (err, req, res, next) => {
+    console.log(err)
     const { status, msg } = err;
     if (status === 404) res.status(status).send({ msg })
     else next(err)

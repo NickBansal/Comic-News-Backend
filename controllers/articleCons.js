@@ -49,7 +49,11 @@ exports.postCommentByArticle = (req, res, next) => {
     const { article_id } = req.params
     const { body, created_by } = req.body
     Comment.create({ ...req.body, belongs_to: article_id })
-    .then(comment => res.send(comment))
+    .then(comment => {
+        const user = User.findById(created_by)
+        const newComment = { ...comment, user}
+        res.send(newComment)
+    })
     .catch(next)
 }
 

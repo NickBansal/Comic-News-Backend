@@ -55,31 +55,16 @@ exports.sendCommentsByArticles = (req, res, next) => {
 };
 
 exports.postCommentByArticle = (req, res, next) => {
-  const
-    { article_id } = req.params,
-    newComment = new Comment(req.body);
-  newComment.belongs_to = article_id;
-  // Check article_id exists
-  return Article.findById(article_id)
-    .then(article => {
-      if (!article) throw { status: 400, message: 'Article Does Not Exist' };
-      // Check user_id exists
-      return User.findById(newComment.created_by)
-    })
-    .then(user => {
-      if (!user) throw { status: 400, message: 'User Does Not Exist' };
-      // Save new Comment
-      return newComment.save()
-    })
+    const { article_id } = req.params
+    const { body, created_by } = req.body
+    Comment.create({ body, created_by, belongs_to: article_id })
     .then(comment => {
       return comment.populate('created_by')
         .execPopulate();
     })
-    .then(comment => {
-      res.status(201).send({ comment });
-    })
-    .catch(next);
-};
+    .then(comment => res.send(comment))
+    .catch(next)
+}
 
 exports.voteArticleUpOrDown = (req, res, next) => {
   const { article_id } = req.params;

@@ -15,3 +15,22 @@ exports.sendUserByUsername = (req, res, next) => {
     })
     .catch(next)
 }
+
+exports.sendAllArticlesByUser = (req, res, next) => {
+    const { username } = req.params
+    Articles.find({ username })
+    .populate('created_by')
+    .then(articles => {
+        res.send(articles)
+    })
+    .catch(next)
+}
+
+// exports.sendCommentsByUsername = (req, res, next) => {
+//     const { username } = req.params
+//     Articles.find({ username })
+//     .then(articles => {
+//         res.send(articles)
+//     })
+//     .catch(next)
+// }

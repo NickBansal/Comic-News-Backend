@@ -10,8 +10,8 @@ userRouter.get('/', sendAllUsers)
 
 userRouter.get('/:username', sendUserByUsername)
 
-userRouter.get('/:username/articles', sendAllArticlesByUser)
+// userRouter.get('/:username/articles', sendAllArticlesByUser)
 
-userRouter.get('/:username/comments', sendCommentsByUsername)
+// userRouter.get('/:username/comments', sendCommentsByUsername)
 
 module.exports = userRouter;

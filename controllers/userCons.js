@@ -1,4 +1,4 @@
-const { User } = require('../models')
+const { User, Articles } = require('../models')
 
 exports.sendAllUsers = (req, res, next) => {
     User.find()

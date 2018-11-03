@@ -27,20 +27,19 @@ exports.sendAllArticles = (req, res, next) => {
 
 exports.sendArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  Article.findById(article_id)
-    .lean()
-    .populate("created_by")
-    .then(article => {
-      if (!article)
-        return Promise.reject({
-          status: 400,
-          msg: `${article_id} is not a valid article Id`,
-        });
-      return Promise.all([Comment.find({ belongs_to: article._id }), article]);
-    })
-    .then(([comments, articles]) => {
-      const comment_count = comments.length;
-      res.send({ ...articles, comment_count });
+  return Promise.all(
+    [
+      Article.findById(article_id)
+        .populate('created_by')
+        .lean()
+        .exec(),
+      Comment.find({ belongs_to: article_id })
+        .countDocuments()
+    ])
+    .then(([article, count]) => {
+      if (!article) throw { status: 404, message: 'Article Not Found' };
+      article.comments = count;
+      res.status(200).send({ article });
     })
     .catch(next);
 };

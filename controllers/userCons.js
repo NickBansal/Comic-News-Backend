@@ -1,4 +1,4 @@
-const { User, Articles } = require('../models')
+const { User, Article, Comment } = require('../models')
 
 exports.sendAllUsers = (req, res, next) => {
     User.find()
@@ -16,21 +16,36 @@ exports.sendUserByUsername = (req, res, next) => {
     .catch(next)
 }
 
-// exports.sendAllArticlesByUser = (req, res, next) => {
-//     const { username } = req.params
-//     Articles.find({ username })
-//     .populate('created_by')
-//     .then(articles => {
-//         res.send(articles)
-//     })
-//     .catch(err => console.log(err))
-// }
+exports.sendAllArticlesByUser = (req, res, next) => {
+    const { username } = req.params
+    Article.find()
+    .populate('created_by')
+    .then(articles => {
+        const newArticles = [];
+        articles.forEach(article => {
+            if (article.created_by.username === username) {
+                newArticles.push(article)
+            }
+        })
+        return newArticles
+    })
+    .then(articles => res.send(articles))
+    .catch(next)
+}
 
-// exports.sendCommentsByUsername = (req, res, next) => {
-//     const { username } = req.params
-//     Articles.find({ username })
-//     .then(articles => {
-//         res.send(articles)
-//     })
-//     .catch(next)
-// }
+exports.sendCommentsByUsername = (req, res, next) => {
+    const { username } = req.params
+    Comment.find()
+    .populate('created_by')
+    .then(comments => {
+        const newComments = [];
+        comments.forEach(comment => {
+            if (comment.created_by.username === username) {
+                newComments.push(comment)
+            }
+        })
+        return newComments
+    })
+    .then(comments => res.send(comments))
+    .catch(next)
+}

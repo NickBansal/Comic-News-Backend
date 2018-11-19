@@ -102,24 +102,22 @@ The /api/articles endpoint will return a JSON array of article objects in this f
 {
   "articles": [
     {
-      "_id": "5b794cd225a65452d9155364",
-      "votes": 0,
+      "_id": "5bdf0c83f1d1b30a073bd255",
+      "votes": 3,
       "title": "Running a Node App",
       "created_by": {
-        "_id": "5b794cd225a65452d9155363",
+        "_id": "5bdf0c83f1d1b30a073bd254",
         "username": "jessjelly",
         "name": "Jess Jelly",
-        "avatar_url": "https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg",
+        "avatar_url": "https://i.pinimg.com/236x/34/4a/ed/344aed015c22cf10fdf75f9936eae6a3--yeardley-smith-lisa-simpson.jpg",
         "__v": 0
       },
       "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
       "created_at": "2016-08-18T12:07:52.389Z",
       "belongs_to": "coding",
-      "image_url": "https://picsum.photos/g/600/300?image=30",
-      "votes": 51
       "__v": 0,
       "comments": 8
-    }
+    },
   ]
 }
 ```
